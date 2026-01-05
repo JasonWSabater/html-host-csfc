@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSfC Process Roadmap</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+      background: #f3f4f6; 
+      padding: 1rem;
+      line-height: 1.5;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    
+    /* Header */
+    .header { 
+      background: white; 
+      border-radius: 1rem; 
+      padding: 1.5rem; 
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .header-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; }
+    .header h1 { font-size: 1.5rem; color: #1f2937; display: flex; align-items: center; gap: 0.5rem; }
+    .header p { color: #6b7280; margin-top: 0.25rem; font-size: 0.9rem; }
+    .progress-display { text-align: right; }
+    .progress-percent { font-size: 2.5rem; font-weight: bold; color: #2563eb; }
+    .progress-label { font-size: 0.8rem; color: #6b7280; }
+    .clear-btn { font-size: 0.75rem; color: #ef4444; background: none; border: none; cursor: pointer; margin-top: 0.25rem; }
+    .clear-btn:hover { text-decoration: underline; }
+    .save-indicator { font-size: 0.8rem; color: #16a34a; margin-top: 0.5rem; }
+    
+    /* Track Selector */
+    .track-selector { display: flex; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; }
+    .track-btn { 
+      flex: 1; 
+      padding: 0.75rem; 
+      border-radius: 0.75rem; 
+      border: none; 
+      font-weight: 600; 
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .track-btn.active { background: #7c3aed; color: white; }
+    .track-btn.inactive { background: #f3f4f6; color: #374151; }
+    .track-btn.inactive:hover { background: #e5e7eb; }
+    .track-btn.customer.active { background: #16a34a; }
+    
+    /* Overview Banner */
+    .overview { 
+      background: linear-gradient(to right, #7c3aed, #2563eb); 
+      border-radius: 1rem; 
+      padding: 1.5rem; 
+      margin-bottom: 1.5rem;
+      color: white;
+    }
+    .overview.customer { background: linear-gradient(to right, #16a34a, #0d9488); }
+    .overview h2 { font-size: 1.1rem; margin-bottom: 0.75rem; }
+    .overview-steps { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.9rem; }
+    .overview-step { background: rgba(255,255,255,0.2); padding: 0.25rem 0.75rem; border-radius: 1rem; }
+    .overview-arrow { opacity: 0.7; }
+    .overview-timeline { margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .overview-time { background: rgba(255,255,255,0.1); padding: 0.75rem; border-radius: 0.5rem; font-size: 0.9rem; }
+    
+    /* Phase */
+    .phase { margin-bottom: 1.5rem; }
+    .phase-header { 
+      display: flex; 
+      align-items: center; 
+      gap: 1rem; 
+      padding: 1rem; 
+      background: white; 
+      border-radius: 0.75rem;
+      border: 2px solid #3b82f6;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .phase-header:hover { background: #f9fafb; }
+    .phase-header.purple { border-color: #7c3aed; }
+    .phase-header.green { border-color: #16a34a; }
+    .phase-header.teal { border-color: #0d9488; }
+    .phase-number { 
+      width: 3rem; 
+      height: 3rem; 
+      background: #3b82f6; 
+      color: white; 
+      border-radius: 0.75rem;
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    .phase-number.purple { background: #7c3aed; }
+    .phase-number.green { background: #16a34a; }
+    .phase-number.teal { background: #0d9488; }
+    .phase-info { flex: 1; }
+    .phase-title { font-weight: bold; font-size: 1.1rem; color: #1f2937; }
+    .phase-subtitle { font-size: 0.9rem; color: #6b7280; }
+    .phase-progress { text-align: right; margin-right: 1rem; }
+    .phase-progress-percent { font-size: 1.5rem; font-weight: bold; color: #1f2937; }
+    .phase-progress-count { font-size: 0.75rem; color: #6b7280; }
+    .phase-toggle { color: #9ca3af; font-size: 1.5rem; }
+    .phase-content { 
+      margin-top: 1rem; 
+      margin-left: 1rem; 
+      padding-left: 1rem; 
+      border-left: 4px solid #e5e7eb;
+    }
+    .phase-content.hidden { display: none; }
+    
+    /* Subsection */
+    .subsection { 
+      margin-bottom: 1rem; 
+      border-radius: 0.75rem; 
+      border: 2px solid #fdba74;
+      background: #fff7ed;
+      overflow: hidden;
+    }
+    .subsection.teal { border-color: #5eead4; background: #f0fdfa; }
+    .subsection.pink { border-color: #f9a8d4; background: #fdf2f8; }
+    .subsection-header { 
+      padding: 0.75rem; 
+      cursor: pointer; 
+      display: flex; 
+      justify-content: space-between;
+      align-items: center;
+    }
+    .subsection-header:hover { opacity: 0.8; }
+    .subsection-title { font-weight: bold; color: #1f2937; }
+    .subsection-subtitle { font-size: 0.85rem; color: #6b7280; }
+    .subsection-content { padding: 0 0.75rem 0.75rem; }
+    .subsection-content.hidden { display: none; }
+    
+    /* Task */
+    .task { 
+      background: white; 
+      border: 1px solid #e5e7eb; 
+      border-radius: 0.5rem; 
+      margin-bottom: 0.75rem;
+      transition: all 0.2s;
+    }
+    .task:hover { border-color: #d1d5db; }
+    .task.completed { background: #f0fdf4; border-color: #86efac; }
+    .task-main { display: flex; gap: 0.75rem; padding: 0.75rem; align-items: flex-start; }
+    .task-checkbox { 
+      width: 1.25rem; 
+      height: 1.25rem; 
+      border: 2px solid #d1d5db; 
+      border-radius: 0.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.125rem;
+      transition: all 0.2s;
+    }
+    .task-checkbox:hover { border-color: #3b82f6; }
+    .task-checkbox.checked { background: #22c55e; border-color: #22c55e; color: white; }
+    .task-content { flex: 1; min-width: 0; }
+    .task-header { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .task-badge { 
+      font-size: 0.7rem; 
+      font-weight: 600; 
+      padding: 0.125rem 0.375rem; 
+      border-radius: 0.25rem;
+    }
+    .task-badge.fips { background: #ffedd5; color: #c2410c; }
+    .task-badge.niap { background: #ccfbf1; color: #0f766e; }
+    .task-badge.pp-dev { background: #fce7f3; color: #be185d; }
+    .task-badge.csfc { background: #ede9fe; color: #6d28d9; }
+    .task-badge.gate { background: #fee2e2; color: #b91c1c; }
+    .task-label { font-weight: 500; color: #1f2937; }
+    .task.completed .task-label { color: #15803d; text-decoration: line-through; }
+    .task-info-btn { 
+      margin-left: auto; 
+      background: none; 
+      border: none; 
+      cursor: pointer; 
+      color: #9ca3af;
+      padding: 0.25rem;
+      border-radius: 0.25rem;
+    }
+    .task-info-btn:hover { background: #f3f4f6; color: #3b82f6; }
+    .task-info-btn.active { color: #3b82f6; }
+    .task-description { font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; }
+    .task-duration { font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem; }
+    
+    /* Task Details */
+    .task-details { 
+      padding: 0.75rem; 
+      padding-left: 2.75rem;
+      border-top: 1px solid #e5e7eb;
+      background: #f9fafb;
+    }
+    .task-details.hidden { display: none; }
+    .task-details h4 { 
+      font-size: 0.7rem; 
+      font-weight: 600; 
+      color: #6b7280; 
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    .task-details h4:first-child { margin-top: 0; }
+    .task-steps { list-style: none; }
+    .task-step { 
+      display: flex; 
+      gap: 0.5rem; 
+      font-size: 0.875rem; 
+      color: #4b5563;
+      margin-bottom: 0.5rem;
+    }
+    .task-step-num { 
+      width: 1.25rem; 
+      height: 1.25rem; 
+      background: #dbeafe; 
+      color: #1d4ed8;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .task-refs { list-style: none; }
+    .task-ref { margin-bottom: 0.25rem; }
+    .task-ref a { 
+      font-size: 0.875rem; 
+      color: #2563eb; 
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .task-ref a:hover { text-decoration: underline; }
+    
+    /* Gate */
+    .gate { 
+      margin: 1rem 0; 
+      padding: 1rem; 
+      border-radius: 0.75rem;
+      border: 2px solid #fbbf24;
+      background: #fffbeb;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .gate.passed { border-color: #4ade80; background: #f0fdf4; }
+    .gate-icon { 
+      width: 2.5rem; 
+      height: 2.5rem; 
+      border-radius: 50%;
+      background: #f59e0b;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    .gate.passed .gate-icon { background: #22c55e; }
+    .gate-info { flex: 1; }
+    .gate-title { font-weight: bold; color: #1f2937; }
+    .gate-desc { font-size: 0.875rem; color: #6b7280; }
+    .gate-status { font-size: 0.75rem; margin-top: 0.25rem; }
+    .gate-status.pending { color: #d97706; }
+    .gate-status.complete { color: #16a34a; }
+    
+    /* Decision Point */
+    .decision { 
+      margin: 1rem 0; 
+      padding: 1rem; 
+      border-radius: 0.75rem;
+      border: 2px solid #60a5fa;
+      background: #eff6ff;
+    }
+    .decision-header { display: flex; gap: 0.75rem; align-items: flex-start; }
+    .decision-icon { 
+      width: 2.5rem; 
+      height: 2.5rem; 
+      border-radius: 50%;
+      background: #3b82f6;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    .decision-question { font-weight: bold; color: #1e3a8a; }
+    .decision-options { margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .decision-option { 
+      padding: 0.75rem; 
+      border: 2px solid #e5e7eb; 
+      border-radius: 0.5rem;
+      background: white;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+    }
+    .decision-option:hover { border-color: #93c5fd; }
+    .decision-option.selected { border-color: #3b82f6; background: #dbeafe; }
+    .decision-option-label { font-weight: 500; color: #1f2937; }
+    .decision-option-desc { font-size: 0.875rem; color: #6b7280; }
+    
+    /* Warning Box */
+    .warning { 
+      margin: 1rem 0; 
+      padding: 1rem; 
+      border-radius: 0.75rem;
+      border: 2px solid #f9a8d4;
+      background: #fdf2f8;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .warning-icon { color: #db2777; font-size: 1.5rem; flex-shrink: 0; }
+    .warning-title { font-weight: bold; color: #9d174d; }
+    .warning-text { font-size: 0.875rem; color: #831843; margin-top: 0.25rem; }
+    .warning code { background: #fce7f3; padding: 0.125rem 0.25rem; border-radius: 0.25rem; }
+    
+    /* Parallel Indicator */
+    .parallel { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 0.5rem;
+      padding: 0.75rem;
+      margin: 1rem 0;
+    }
+    .parallel-badge { 
+      background: #dbeafe; 
+      color: #1d4ed8; 
+      padding: 0.5rem 1rem; 
+      border-radius: 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    .parallel-icon { color: #3b82f6; }
+    
+    /* Merge Indicator */
+    .merge { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 0.5rem;
+      padding: 0.75rem;
+      margin: 1rem 0;
+    }
+    .merge-badge { 
+      background: #ede9fe; 
+      color: #6d28d9; 
+      padding: 0.5rem 1rem; 
+      border-radius: 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    .merge-icon { color: #7c3aed; }
+    
+    /* Celebration */
+    .celebration { 
+      margin-top: 1rem; 
+      padding: 1rem; 
+      background: #dcfce7; 
+      border: 2px solid #4ade80;
+      border-radius: 0.75rem;
+      text-align: center;
+    }
+    .celebration-emoji { font-size: 2.5rem; }
+    .celebration-title { font-weight: bold; color: #166534; font-size: 1.1rem; }
+    .celebration-text { color: #15803d; }
+    
+    /* Timeline */
+    .timeline { 
+      background: white; 
+      border-radius: 1rem; 
+      padding: 1.5rem; 
+      margin-top: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .timeline h2 { font-size: 1rem; font-weight: bold; margin-bottom: 1rem; color: #1f2937; }
+    .timeline-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .timeline-label { width: 100px; font-size: 0.875rem; color: #6b7280; flex-shrink: 0; }
+    .timeline-bar { 
+      flex: 1; 
+      height: 1.5rem; 
+      background: #e5e7eb; 
+      border-radius: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .timeline-fill { 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+      bottom: 0; 
+      border-radius: 1rem;
+    }
+    .timeline-fill.orange { background: #f97316; }
+    .timeline-fill.teal { background: #14b8a6; }
+    .timeline-fill.pink { background: #ec4899; }
+    .timeline-fill.purple { background: #8b5cf6; }
+    .timeline-text { 
+      position: absolute; 
+      inset: 0; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #1f2937;
+    }
+    .timeline-note { 
+      margin-top: 1rem; 
+      padding-top: 1rem; 
+      border-top: 1px solid #e5e7eb;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+    
+    /* Contacts */
+    .contacts { 
+      background: white; 
+      border-radius: 1rem; 
+      padding: 1.5rem; 
+      margin-top: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .contacts h2 { font-size: 1rem; font-weight: bold; margin-bottom: 1rem; color: #1f2937; }
+    .contacts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 600px) { .contacts-grid { grid-template-columns: 1fr; } }
+    .contact-card { background: #f9fafb; padding: 0.75rem; border-radius: 0.5rem; }
+    .contact-name { font-weight: 600; color: #1f2937; font-size: 0.9rem; }
+    .contact-email { color: #2563eb; font-size: 0.875rem; }
+    .contact-phone { color: #6b7280; font-size: 0.875rem; }
+    
+    /* Footer */
+    .footer { text-align: center; margin-top: 1.5rem; font-size: 0.8rem; color: #9ca3af; }
+    .footer .saved { color: #16a34a; }
+    
+    /* Icons (simple text-based) */
+    .icon { font-style: normal; }
+  </style>
+</head>
+<body>
+  <div class="container" id="app"></div>
+
+  <script>
+    // ============ DATA ============
+    const STORAGE_KEY = 'csfc-roadmap-v2';
+    
+    const TASKS_DATA = {
+      // Vendor Prep
+      'v-prep-1': {
+        label: 'Check NIAP PP List for Your Product Type',
+        description: 'Search the NIAP website to determine if a Protection Profile exists for your technology category',
+        duration: '1-2 days',
+        critical: true,
+        steps: [
+          'Navigate to the NIAP Protection Profiles page at niap-ccevs.org',
+          'Browse or search for PPs that match your product type (e.g., VPN Gateway, MDM, FDE, Network Device)',
+          'Review the PP requirements to ensure your product can meet all mandatory SFRs',
+          'Check the PP version and ensure it\'s currently active (not archived)',
+          'If no PP exists, prepare to contact NIAP about PP development options'
+        ],
+        refs: [
+          { title: 'NIAP Approved Protection Profiles', url: 'https://www.niap-ccevs.org/Profile/PP.cfm' },
+          { title: 'NIAP Guidelines When No PP Exists', url: 'https://www.niap-ccevs.org/Documents_and_Guidance/ccevs/NoPPExists.pdf' }
+        ]
+      },
+      'v-prep-2': {
+        label: 'Define Cryptographic Module Boundary',
+        description: 'Identify what crypto functions your product uses and define the FIPS 140-3 module boundary',
+        duration: '1-2 weeks',
+        steps: [
+          'Inventory all cryptographic algorithms used in your product (AES, SHA, RSA, ECDSA, etc.)',
+          'Determine if you\'ll use your own crypto implementation or an existing validated module',
+          'Define the physical and logical boundary of your cryptographic module',
+          'Identify all interfaces (data input/output, control input, status output, power)',
+          'Document the operational environment(s) where the module will operate',
+          'Determine the target FIPS 140-3 security level (1-4)'
+        ],
+        refs: [
+          { title: 'FIPS 140-3 Standard', url: 'https://csrc.nist.gov/pubs/fips/140-3/final' },
+          { title: 'CMVP Management Manual', url: 'https://csrc.nist.gov/Projects/cryptographic-module-validation-program/cmvp-fips-140-3-management-manual' }
+        ]
+      },
+      'v-prep-3': {
+        label: 'Select Testing Laboratories',
+        description: 'Choose NVLAP-accredited labs: a CST Lab for FIPS and a CCTL for Common Criteria',
+        duration: '1-2 weeks',
+        steps: [
+          'Review the list of NVLAP-accredited CST Labs for FIPS testing',
+          'Review the list of NIAP-approved Common Criteria Testing Laboratories (CCTLs)',
+          'Request quotes from multiple labs - consider cost, timeline, and expertise',
+          'Verify labs have experience with your product type and target PP',
+          'Check for potential conflicts of interest',
+          'Execute contracts and NDAs with selected laboratories'
+        ],
+        refs: [
+          { title: 'NVLAP Accredited Labs', url: 'https://www.nist.gov/nvlap/nvlap-lab-lists' },
+          { title: 'NIAP Approved CCTLs', url: 'https://www.niap-ccevs.org/Documents_and_Guidance/cctls.cfm' }
+        ]
+      },
+      
+      // FIPS Track
+      'fips-1': {
+        label: 'CAVP Algorithm Testing',
+        description: 'Submit crypto algorithms to CST lab for Cryptographic Algorithm Validation Program testing',
+        duration: '4-8 weeks',
+        track: 'fips',
+        steps: [
+          'Work with CST lab to identify all FIPS-approved algorithms in your module',
+          'Define algorithm capabilities using the ACVP Management Portal',
+          'Lab generates test vectors from NIST\'s ACVTS system',
+          'Implement the ACVP protocol to process demo vectors',
+          'Once demo passes, lab runs production vectors',
+          'Lab submits validation request to NIST'
+        ],
+        refs: [
+          { title: 'NIST CAVP Overview', url: 'https://csrc.nist.gov/projects/cryptographic-algorithm-validation-program' },
+          { title: 'ACVP Protocol (GitHub)', url: 'https://github.com/usnistgov/ACVP' }
+        ]
+      },
+      'fips-2': {
+        label: 'CAVP Certificates Issued',
+        description: 'Receive validation certificates for all FIPS-approved algorithms',
+        duration: '2-4 weeks',
+        track: 'fips',
+        critical: true,
+        steps: [
+          'NIST reviews submission for completeness',
+          'NIST validates all algorithm tests passed',
+          'If issues found, lab resubmits corrected results',
+          'Algorithm added to CAVP database',
+          'Certificates posted on NIST website',
+          'Certificate numbers required for CMVP submission'
+        ],
+        refs: [
+          { title: 'CAVP Validation Lists', url: 'https://csrc.nist.gov/projects/cryptographic-algorithm-validation-program/validation-search' }
+        ]
+      },
+      'fips-3': {
+        label: 'Module Documentation Complete',
+        description: 'Finalize Security Policy, FSM, and all required documentation per ISO/IEC 19790',
+        duration: '4-8 weeks',
+        track: 'fips',
+        steps: [
+          'Develop non-proprietary Security Policy per SP 800-140B',
+          'Create Finite State Model documenting all module states',
+          'Document all services, roles, and authentication mechanisms',
+          'Prepare physical security documentation',
+          'Document self-tests (power-up, conditional, periodic)',
+          'Create life-cycle assurance documentation'
+        ],
+        refs: [
+          { title: 'SP 800-140B: Security Policy Requirements', url: 'https://csrc.nist.gov/pubs/sp/800/140/b/final' }
+        ]
+      },
+      'fips-4': {
+        label: 'CST Lab Module Testing',
+        description: 'Laboratory performs full module testing per ISO/IEC 24759',
+        duration: '3-6 months',
+        track: 'fips',
+        steps: [
+          'Lab performs documentation review',
+          'Lab executes all test requirements from ISO/IEC 24759',
+          'Physical testing (tamper evidence, environmental protection)',
+          'Crypto algorithm testing using CAVP-validated implementations',
+          'Operational testing of all security services',
+          'Self-test verification and error indicator testing',
+          'Lab prepares detailed test report'
+        ],
+        refs: [
+          { title: 'CMVP Overview', url: 'https://csrc.nist.gov/projects/cryptographic-module-validation-program' }
+        ]
+      },
+      'fips-5': {
+        label: 'Listed on Modules In Process (MIP)',
+        description: 'Test report submitted to CMVP; module appears on MIP list',
+        duration: '1-2 weeks',
+        track: 'fips',
+        steps: [
+          'CST lab compiles complete submission package',
+          'Lab submits signed recommendation letter to CMVP',
+          'CMVP receives and logs submission',
+          'Module transitions from IUT to MIP list',
+          'Status shown as "Review Pending"',
+          'Lab pays NIST Cost Recovery fee'
+        ],
+        refs: [
+          { title: 'Modules In Process List', url: 'https://csrc.nist.gov/Projects/Cryptographic-Module-Validation-Program/Modules-In-Process/Modules-In-Process-List' }
+        ]
+      },
+      'fips-6': {
+        label: 'CMVP Review & Coordination',
+        description: 'NIST reviews submission - THIS IS THE LONGEST WAIT (avg 12+ months)',
+        duration: '6-18 months',
+        track: 'fips',
+        steps: [
+          'Status changes to "In Review" when reviewer assigned',
+          'Reviewer examines test report and documentation',
+          'Status changes to "Coordination" if issues arise',
+          'Lab and vendor respond to comments',
+          'Multiple coordination cycles may occur',
+          'Status changes to "Finalization" when complete',
+          'Consider interim validation option (2-year certificate)'
+        ],
+        refs: [
+          { title: 'Interim Validation Process', url: 'https://csrc.nist.gov/projects/cryptographic-module-validation-program/programmatic-transitions' }
+        ]
+      },
+      'fips-7': {
+        label: 'FIPS 140-3 Certificate Issued',
+        description: 'Module validated and listed; certificate valid 5 years',
+        duration: 'Final',
+        track: 'fips',
+        critical: true,
+        steps: [
+          'CMVP issues validation certificate',
+          'Module added to Validated Modules list',
+          'Security Policy published on CMVP website',
+          'Certificate valid for 5 years (2 for interim)',
+          'Plan for maintenance and revalidation',
+          'After Sept 2026, only FIPS 140-3 accepted'
+        ],
+        refs: [
+          { title: 'Validated Modules Search', url: 'https://csrc.nist.gov/projects/cryptographic-module-validation-program/validated-modules' }
+        ]
+      },
+      
+      // NIAP Track
+      'niap-1': {
+        label: 'Contact NIAP to Confirm Path',
+        description: 'Email NIAP to discuss your product and confirm PP applicability or development need',
+        duration: '1-2 weeks',
+        track: 'niap',
+        critical: true,
+        steps: [
+          'Send inquiry to niap@niap-ccevs.org describing your product',
+          'Provide product description, target market, security features',
+          'NIAP will confirm if existing PP applies',
+          'If no PP, discuss development options',
+          'Request meeting with NIAP technical staff if needed',
+          'Obtain written guidance on evaluation approach'
+        ],
+        refs: [
+          { title: 'NIAP Contact', url: 'mailto:niap@niap-ccevs.org' },
+          { title: 'NIAP Scheme Publication 1', url: 'https://www.niap-ccevs.org/Documents_and_Guidance/ccevs/scheme-pub-1.pdf' }
+        ]
+      },
+      
+      // PP Development
+      'pp-1': {
+        label: 'Initial NIAP Consultation',
+        description: 'Meet with NIAP to determine if CC evaluation is necessary and discuss PP development path',
+        duration: '2-4 weeks',
+        track: 'pp-dev',
+        steps: [
+          'Schedule formal consultation meeting with NIAP',
+          'Present detailed product description and security capabilities',
+          'Discuss operational use cases and threat environment',
+          'NIAP assesses whether CC evaluation is appropriate',
+          'Explore alternatives if CC is not ideal fit',
+          'If PP development confirmed, discuss timeline'
+        ],
+        refs: [
+          { title: 'NIAP Guidelines When No PP Exists', url: 'https://www.niap-ccevs.org/Documents_and_Guidance/ccevs/NoPPExists.pdf' }
+        ]
+      },
+      'pp-2': {
+        label: 'Technical Community Formation',
+        description: 'NIAP establishes Technical Community (TC) with vendors, government experts, evaluators, and academia',
+        duration: '4-8 weeks',
+        track: 'pp-dev',
+        steps: [
+          'NIAP assigns a Technical Community Lead',
+          'NIAP conducts Industry Day to announce TC formation',
+          'Recruit Industry SMEs with deep technical knowledge',
+          'Recruit Solution/Operational SMEs from government',
+          'Include Common Criteria SMEs (often NIAP Validators)',
+          'Invite CCTL evaluators to contribute',
+          'TC Lead sets up workspace, mailing list, meetings',
+          'Hold kick-off meeting to establish roadmap'
+        ],
+        refs: [
+          { title: 'Technical Communities White Paper', url: 'https://www.niap-ccevs.org/Documents_and_Guidance/ccevs/technical_communities_final.pdf' },
+          { title: 'International Technical Communities', url: 'https://www.commoncriteriaportal.org/communities/technical_communities.cfm' },
+          { title: 'CC GitHub Projects', url: 'https://github.com/commoncriteria' }
+        ]
+      },
+      'pp-3': {
+        label: 'Essential Security Requirements (ESR) Development',
+        description: 'TC defines high-level security requirements outlining threats, objectives, and security needs',
+        duration: '2-3 months',
+        track: 'pp-dev',
+        steps: [
+          'Solution/Operational SMEs communicate threats',
+          'Document operational environment and use cases',
+          'Define security objectives based on threat analysis',
+          'Identify critical security requirements',
+          'Draft ESR document for TC review',
+          'Iterate based on TC feedback',
+          'Obtain TC consensus on security scope'
+        ],
+        refs: [
+          { title: 'Technical Communities Process', url: 'https://www.niap-ccevs.org/Documents_and_Guidance/ccevs/technical_communities_final.pdf' }
+        ]
+      },
+      'pp-4': {
+        label: 'Draft PP Development',
+        description: 'TC develops detailed Protection Profile with SFRs, SARs, and Evaluation Activities',
+        duration: '4-8 months',
+        track: 'pp-dev',
+        steps: [
+          'Technical Editor designated to maintain PP draft',
+          'Industry SMEs lead SFR development',
+          'Map SFRs to identified threats',
+          'Define Security Assurance Requirements (SARs)',
+          'Develop Evaluation Activities for each SFR',
+          'CC SMEs ensure PP compliance with CC format',
+          'Use GitHub for version control and collaboration',
+          'Hold regular TC meetings to resolve issues'
+        ],
+        refs: [
+          { title: 'Common Criteria GitHub', url: 'https://github.com/commoncriteria' },
+          { title: 'Example: Application Software PP', url: 'https://github.com/commoncriteria/application' }
+        ]
+      },
+      'pp-5': {
+        label: 'Internal TC Review Cycles',
+        description: 'Multiple review iterations within Technical Community to refine requirements',
+        duration: '2-4 months',
+        track: 'pp-dev',
+        steps: [
+          'Distribute draft PP to all TC members',
+          'CCTL evaluators review for testability',
+          'Operational SMEs verify government needs met',
+          'Industry SMEs verify implementability',
+          'Track and resolve all comments',
+          'Technical Editor incorporates changes',
+          'Repeat until TC reaches consensus',
+          'TC Lead approves for broader review'
+        ],
+        refs: [
+          { title: 'Technical Communities Process', url: 'https://www.niap-ccevs.org/Documents_and_Guidance/ccevs/technical_communities_final.pdf' }
+        ]
+      },
+      'pp-6': {
+        label: 'Public Review Period',
+        description: 'Draft PP posted for public comment; TC addresses feedback',
+        duration: '2-3 months',
+        track: 'pp-dev',
+        steps: [
+          'Draft PP published on NIAP website',
+          'Announce review period to stakeholders',
+          'Collect and categorize public comments',
+          'TC evaluates each comment',
+          'Incorporate accepted changes',
+          'Document rationale for rejections',
+          'Publish comment resolution document',
+          'Prepare final PP for NIAP approval'
+        ],
+        refs: [
+          { title: 'NIAP Protection Profiles', url: 'https://www.niap-ccevs.org/Profile/PP.cfm' }
+        ]
+      },
+      'pp-7': {
+        label: 'NIAP Approval Process',
+        description: 'Final PP submitted to NIAP for formal approval and publication',
+        duration: '1-2 months',
+        track: 'pp-dev',
+        steps: [
+          'TC Lead submits final PP to NIAP',
+          'NIAP performs final compliance review',
+          'Any remaining issues resolved with TC',
+          'NIAP Director approves PP',
+          'PP assigned official version number',
+          'Supporting documents finalized'
+        ],
+        refs: [
+          { title: 'NIAP Scheme Overview', url: 'https://www.niap-ccevs.org/Documents_and_Guidance/ccevs/scheme-pub-1.pdf' }
+        ]
+      },
+      'pp-8': {
+        label: 'PP Published on NIAP Website',
+        description: 'Protection Profile officially published and available for evaluations',
+        duration: 'Final',
+        track: 'pp-dev',
+        critical: true,
+        steps: [
+          'PP published on official NIAP website',
+          'PP added to approved Protection Profiles list',
+          'Vendors can now begin evaluations',
+          'TC transitions to maintenance mode',
+          'PP reviewed annually or as needed',
+          'TC Lead establishes maintenance process'
+        ],
+        refs: [
+          { title: 'NIAP Approved Protection Profiles', url: 'https://www.niap-ccevs.org/Profile/PP.cfm' }
+        ]
+      },
+      
+      // NIAP Evaluation
+      'niap-2': {
+        label: 'Develop Security Target (ST)',
+        description: 'Create ST document specifying security claims against the Protection Profile',
+        duration: '4-8 weeks',
+        track: 'niap',
+        steps: [
+          'Obtain applicable PP from NIAP website',
+          'Review all PP requirements (SFRs, SARs, EAs)',
+          'Document your Target of Evaluation (TOE)',
+          'Write TOE description with architecture',
+          'Map all PP requirements to implementation',
+          'Document selections, assignments, optional SFRs',
+          'Prepare evidence for each Evaluation Activity',
+          'Have CCTL review draft ST'
+        ],
+        refs: [
+          { title: 'NIAP Scheme Publication 1', url: 'https://www.niap-ccevs.org/Documents_and_Guidance/ccevs/scheme-pub-1.pdf' }
+        ]
+      },
+      'niap-3': {
+        label: 'Kick-off Meeting with CCTL & Validator',
+        description: 'Initial meeting to review ST and evaluation plan with NIAP validator',
+        duration: '1-2 weeks',
+        track: 'niap',
+        steps: [
+          'CCTL requests evaluation kick-off with NIAP',
+          'NIAP assigns Validator to monitor evaluation',
+          'Submit draft ST and evaluation plan',
+          'Kick-off meeting held with CCTL and Validator',
+          'Review ST for completeness and PP conformance',
+          'Validator approves evaluation to proceed',
+          'Product added to "Products in Evaluation" list',
+          'Establish regular check-ins with Validator'
+        ],
+        refs: [
+          { title: 'NIAP Products in Evaluation', url: 'https://www.niap-ccevs.org/Product/Compliant.cfm' }
+        ]
+      },
+      'niap-4': {
+        label: 'CCTL Product Evaluation',
+        description: 'Lab tests product against all PP requirements (target: 90 days)',
+        duration: '2-4 months',
+        track: 'niap',
+        steps: [
+          'CCTL evaluators review ST claims and docs',
+          'Execute Evaluation Activities for each SFR',
+          'Perform functional testing of security features',
+          'Conduct vulnerability analysis (if required)',
+          'Review developer evidence',
+          'Document findings requiring vendor response',
+          'Vendor addresses findings',
+          'CCTL prepares Evaluation Technical Report (ETR)'
+        ],
+        refs: [
+          { title: 'Common Evaluation Methodology', url: 'https://www.commoncriteriaportal.org/cc/' }
+        ]
+      },
+      'niap-5': {
+        label: 'Evaluation Technical Report (ETR) Submitted',
+        description: 'CCTL submits ETR and evidence to NIAP validator',
+        duration: '2-4 weeks',
+        track: 'niap',
+        steps: [
+          'CCTL finalizes ETR',
+          'Prepare Evaluation Configuration Record',
+          'Compile Validation Report draft',
+          'Submit complete package to Validator',
+          'Include all test results and evidence',
+          'Validator confirms receipt and begins review'
+        ],
+        refs: [
+          { title: 'NIAP Scheme Publication 1', url: 'https://www.niap-ccevs.org/Documents_and_Guidance/ccevs/scheme-pub-1.pdf' }
+        ]
+      },
+      'niap-6': {
+        label: 'NIAP Validator Review',
+        description: 'Validator reviews findings, may request clarifications',
+        duration: '2-6 weeks',
+        track: 'niap',
+        steps: [
+          'Validator reviews ETR for completeness',
+          'May observe CCTL testing or review evidence',
+          'Questions/issues raised to CCTL',
+          'Coordination until Validator satisfied',
+          'Validator completes Validation Report',
+          'NIAP Director reviews and approves'
+        ],
+        refs: [
+          { title: 'NIAP Scheme Publication 1', url: 'https://www.niap-ccevs.org/Documents_and_Guidance/ccevs/scheme-pub-1.pdf' }
+        ]
+      },
+      'niap-7': {
+        label: 'Common Criteria Certificate Issued',
+        description: 'Product listed on NIAP Product Compliant List (PCL)',
+        duration: '1-2 weeks',
+        track: 'niap',
+        critical: true,
+        steps: [
+          'NIAP Director signs CC certificate',
+          'Certificate issued with product details',
+          'Product added to Product Compliant List',
+          'ST and Validation Report published',
+          'Certificate valid for 2 years',
+          'Plan for certificate maintenance'
+        ],
+        refs: [
+          { title: 'NIAP Product Compliant List', url: 'https://www.niap-ccevs.org/Product/Compliant.cfm' },
+          { title: 'Assurance Continuity Guidance', url: 'https://www.niap-ccevs.org/Documents_and_Guidance/ccevs/scheme-pub-6.pdf' }
+        ]
+      },
+      
+      // CSfC PMO
+      'v-csfc-1': {
+        label: 'Submit CSfC Component Questionnaire',
+        description: 'Complete detailed questionnaire for each product; email to csfc_components@nsa.gov',
+        duration: '1-2 weeks',
+        track: 'csfc',
+        steps: [
+          'Download CSfC Component Questionnaire from NSA website',
+          'Complete all sections including product details and certifications',
+          'Attach FIPS 140-3 and NIAP CC certificates',
+          'Provide Security Policy and Security Target',
+          'Submit to csfc_components@nsa.gov',
+          'Await confirmation from CSfC PMO'
+        ],
+        refs: [
+          { title: 'CSfC Component Questionnaire', url: 'https://www.nsa.gov/resources/everyone/csfc/assets/files/questionnaire.pdf' },
+          { title: 'CSfC Components List', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/components-list/' }
+        ]
+      },
+      'v-csfc-2': {
+        label: 'CSfC PMO Reviews Submission',
+        description: 'PMO verifies certifications, reviews questionnaire, assesses product fit',
+        duration: '2-4 weeks',
+        track: 'csfc',
+        steps: [
+          'PMO verifies FIPS 140-3 certificate is active',
+          'PMO verifies NIAP CC certificate is current',
+          'PMO reviews questionnaire for completeness',
+          'PMO assesses product fit for Capability Packages',
+          'PMO may request additional information',
+          'PMO determines eligibility for Components List'
+        ],
+        refs: [
+          { title: 'CSfC Customer Handbook', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/Customer-Handbook/' }
+        ]
+      },
+      'v-csfc-3': {
+        label: 'Negotiate & Sign Memorandum of Agreement (MoA)',
+        description: 'Execute MoA committing to maintain certifications and fix vulnerabilities promptly',
+        duration: '2-4 weeks',
+        track: 'csfc',
+        critical: true,
+        steps: [
+          'CSfC PMO initiates MoA process',
+          'Review MoA terms and requirements',
+          'MoA specifies maintaining certifications',
+          'MoA requires timely vulnerability fixes',
+          'May include technology-specific requirements',
+          'Legal review of MoA (internal)',
+          'Execute MoA with authorized signatures',
+          'Return signed MoA to CSfC PMO'
+        ],
+        refs: [
+          { title: 'CSfC Customer Handbook', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/Customer-Handbook/' }
+        ]
+      },
+      'v-csfc-4': {
+        label: 'Product Published on CSfC Components List',
+        description: 'Your product is now available for customers to use in CSfC solutions',
+        duration: '1-2 weeks',
+        track: 'csfc',
+        critical: true,
+        steps: [
+          'CSfC PMO adds product to Components List',
+          'Product categorized by technology type',
+          'Listing includes product name and certifications',
+          'Customers can now select your product',
+          'Maintain certifications and MoA compliance',
+          'Report vulnerabilities per MoA requirements'
+        ],
+        refs: [
+          { title: 'CSfC Components List', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/components-list/' }
+        ]
+      },
+      
+      // Customer Track
+      'c-plan-1': {
+        label: 'Select Capability Package (CP)',
+        description: 'Choose which CP fits your mission: Mobile Access, Campus WLAN, Multi-Site Connectivity, or Data at Rest',
+        duration: '1-2 weeks',
+        steps: [
+          'Review all available Capability Packages on CSfC website',
+          'Mobile Access (MA) - for secure mobile device connectivity',
+          'Campus WLAN - for wireless network protection',
+          'Multi-Site Connectivity (MSC) - for site-to-site VPN',
+          'Data at Rest (DAR) - for storage encryption',
+          'Match CP requirements to your mission needs'
+        ],
+        refs: [
+          { title: 'CSfC Capability Packages', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/Capability-Packages/' }
+        ]
+      },
+      'c-plan-2': {
+        label: 'Pre-Submission Meeting with CSfC PMO',
+        description: 'Contact csfc_register@nsa.gov EARLY to discuss your planned solution design',
+        duration: '1-2 weeks',
+        critical: true,
+        steps: [
+          'Email csfc_register@nsa.gov to request meeting',
+          'Prepare draft solution architecture',
+          'Present planned design for feedback',
+          'Discuss potential deviations from CP',
+          'Get early guidance on registration requirements',
+          'Establish relationship with PMO'
+        ],
+        refs: [
+          { title: 'CSfC Registration Contact', url: 'mailto:csfc_register@nsa.gov' }
+        ]
+      },
+      'c-plan-3': {
+        label: 'Select Components from CSfC Components List',
+        description: 'Choose products for BOTH encryption layers - must be on official Components List',
+        duration: '1-2 weeks',
+        steps: [
+          'Access CSfC Components List on NSA website',
+          'Select Inner Layer encryption component',
+          'Select Outer Layer encryption component',
+          'Ensure products from different vendors (diversity)',
+          'Verify current certifications (not expired)',
+          'Confirm products support CP capabilities',
+          'Contact vendors for availability'
+        ],
+        refs: [
+          { title: 'CSfC Components List', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/components-list/' }
+        ]
+      },
+      'c-plan-4': {
+        label: 'Engage Trusted Integrator (Optional but Recommended)',
+        description: 'Contract with a listed TI to help design, build, and test your solution',
+        duration: 'Variable',
+        steps: [
+          'Review CSfC Trusted Integrator list',
+          'Evaluate TI capabilities and experience',
+          'Request proposals from selected TIs',
+          'TI assists with design, procurement, testing',
+          'TI familiarity accelerates registration',
+          'Contract based on organization needs'
+        ],
+        refs: [
+          { title: 'CSfC Trusted Integrator List', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/Trusted-Integrator-List/' }
+        ]
+      },
+      'c-build-1': {
+        label: 'Build Solution Per CP Specifications',
+        description: 'Implement dual-layer encryption architecture exactly as specified in your chosen CP',
+        duration: '4-8 weeks',
+        steps: [
+          'Procure selected components from CSfC list',
+          'Configure Inner Layer encryption per CP',
+          'Configure Outer Layer encryption per CP',
+          'Implement key management per CSfC requirements',
+          'Configure authentication (PKI, MFA)',
+          'Follow vendor guidance documents',
+          'Document all configuration settings'
+        ],
+        refs: [
+          { title: 'CSfC Capability Packages', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/Capability-Packages/' }
+        ]
+      },
+      'c-build-2': {
+        label: 'Create Network Architecture Diagrams',
+        description: 'Document topology showing both encryption layers, all components, and data flows',
+        duration: '1-2 weeks',
+        steps: [
+          'Create detailed network topology diagram',
+          'Show both Inner and Outer encryption layers',
+          'Label all CSfC components with versions',
+          'Show data flows between components',
+          'Identify network boundaries (Black, Gray, Red)',
+          'Document IP addresses and interfaces',
+          'Diagrams submitted with registration'
+        ],
+        refs: [
+          { title: 'CSfC Customer Handbook', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/Customer-Handbook/' }
+        ]
+      },
+      'c-build-3': {
+        label: 'Conduct Test & Evaluation (T&E)',
+        description: 'Execute CP-specific test procedures; this evidence is critical for AO approval',
+        duration: '2-4 weeks',
+        critical: true,
+        steps: [
+          'Review CP-specific test requirements',
+          'Develop test plan covering all requirements',
+          'Execute functional tests of encryption layers',
+          'Verify key management functionality',
+          'Test failover and recovery procedures',
+          'Document all test results with evidence',
+          'Remediate any failures and retest'
+        ],
+        refs: [
+          { title: 'CSfC Solution Testing', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/' }
+        ]
+      },
+      'c-build-4': {
+        label: 'Complete CP-Specific Compliance Checklist',
+        description: 'Fill out the detailed checklist explaining how each requirement is met',
+        duration: '1-2 weeks',
+        critical: true,
+        steps: [
+          'Obtain CP-specific Compliance Checklist',
+          'Address each requirement with details',
+          'Reference test results as evidence',
+          'Document any deviations with justification',
+          'Prepare deviation forms if needed',
+          'Have technical staff review for accuracy'
+        ],
+        refs: [
+          { title: 'CSfC Compliance Checklists', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/' }
+        ]
+      },
+      'c-reg-1': {
+        label: 'Obtain Solution Registration ID Number',
+        description: 'Request unique registration ID from CSfC PMO',
+        duration: '1-2 days',
+        steps: [
+          'Email csfc_register@nsa.gov to request ID',
+          'Provide organization name and solution overview',
+          'Receive unique Registration ID Number',
+          'Use this ID on all registration documents'
+        ],
+        refs: [
+          { title: 'CSfC Registration Contact', url: 'mailto:csfc_register@nsa.gov' }
+        ]
+      },
+      'c-reg-2': {
+        label: 'Prepare Deviation Forms (If Needed)',
+        description: 'Document any CP deviations with justification',
+        duration: '2-4 weeks if needed',
+        steps: [
+          'Identify requirements not met as specified',
+          'Complete CSfC Deviation Form for each',
+          'Provide technical justification',
+          'Describe compensating controls',
+          'Deviations may require DRB approval',
+          'Submit with registration package'
+        ],
+        refs: [
+          { title: 'CSfC Customer Handbook', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/Customer-Handbook/' }
+        ]
+      },
+      'c-reg-3': {
+        label: 'Authorizing Official (AO) Reviews Package',
+        description: 'AO reviews evidence, confirms checklist accuracy',
+        duration: '1-2 weeks',
+        steps: [
+          'Brief AO on CSfC solution design',
+          'AO reviews compliance checklist and evidence',
+          'AO reviews deviation forms and risk',
+          'AO confirms understanding of residual risks',
+          'AO prepares to sign registration form'
+        ],
+        refs: [
+          { title: 'CSfC Customer Handbook', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/Customer-Handbook/' }
+        ]
+      },
+      'c-reg-4': {
+        label: 'AO Signs Registration Form',
+        description: 'AO certifies compliance and accepts risk',
+        duration: '1-2 days',
+        critical: true,
+        steps: [
+          'AO signs CSfC Solution Registration Form',
+          'Signature certifies compliance with CP',
+          'AO accepts responsibility for system',
+          'Retain copy of signed form'
+        ],
+        refs: [
+          { title: 'CSfC Customer Handbook', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/Customer-Handbook/' }
+        ]
+      },
+      'c-reg-5': {
+        label: 'Submit Complete Package to CSfC PMO',
+        description: 'Send signed registration, checklist, diagrams, and deviation forms',
+        duration: '1 day',
+        steps: [
+          'Compile complete registration package',
+          'Include: Signed registration form with ID',
+          'Include: Completed Compliance Checklist',
+          'Include: Network architecture diagrams',
+          'Include: Deviation forms (if applicable)',
+          'Submit to csfc_register@nsa.gov'
+        ],
+        refs: [
+          { title: 'CSfC Registration Contact', url: 'mailto:csfc_register@nsa.gov' }
+        ]
+      },
+      'c-approve-1': {
+        label: 'CSfC PMO Reviews Registration',
+        description: 'PMO validates submission, checks compliance',
+        duration: '2-4 weeks',
+        steps: [
+          'PMO receives and logs package',
+          'Verifies all required documents included',
+          'Reviews compliance checklist responses',
+          'Validates components on current list',
+          'May request additional information',
+          'If deviations exist, routes to DRB'
+        ],
+        refs: [
+          { title: 'CSfC Customer Handbook', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/Customer-Handbook/' }
+        ]
+      },
+      'c-approve-2': {
+        label: 'Deviation Review (If Applicable)',
+        description: 'Deviation Review Board → Tech Advisory Council → CSD Alpha 1 approval',
+        duration: '2-6 weeks if needed',
+        steps: [
+          'DRB evaluates deviation requests',
+          'DRB assesses risk of deviations',
+          'If approved, forwards to TAC',
+          'TAC provides technical recommendation',
+          'Final approval from CSD Alpha 1 if required',
+          'Decision communicated to customer'
+        ],
+        refs: [
+          { title: 'CSfC Customer Handbook', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/Customer-Handbook/' }
+        ]
+      },
+      'c-approve-3': {
+        label: 'Registration Acknowledgement Letter Issued',
+        description: 'NSA issues letter; valid for 1 year',
+        duration: '1-2 weeks',
+        critical: true,
+        steps: [
+          'PMO issues Registration Acknowledgement Letter',
+          'Letter confirms solution meets CP requirements',
+          'Registration valid for 1 year',
+          'Mark calendar for renewal (120, 60, 30 day notices)',
+          'Solution approved for operational use',
+          'Maintain compliance throughout period'
+        ],
+        refs: [
+          { title: 'CSfC Customer Handbook', url: 'https://www.nsa.gov/Resources/Commercial-Solutions-for-Classified-Program/Customer-Handbook/' }
+        ]
+      }
+    };
+
+    // ============ STATE ============
+    let state = {
+      checkedItems: {},
+      expandedPhases: {
+        'vendor-1': true, 'vendor-2': true, 'vendor-3': true, 'vendor-4': true,
+        'customer-1': true, 'customer-2': true, 'customer-3': true, 'customer-4': true
+      },
+      expandedTasks: {},
+      expandedSubsections: { 'fips': true, 'niap': true },
+      activeTrack: 'vendor',
+      ppRequired: null
+    };
+
+    // ============ STORAGE ============
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state = { ...state, ...parsed };
+        }
+      } catch (e) {
+        console.error('Failed to load state:', e);
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        console.error('Failed to save state:', e);
+      }
+    }
+
+    // ============ HELPERS ============
+    function getProgress(taskIds) {
+      const checked = taskIds.filter(id => state.checkedItems[id]).length;
+      return { checked, total: taskIds.length, percent: Math.round((checked / taskIds.length) * 100) || 0 };
+    }
+
+    function isGatePassed(taskIds) {
+      return taskIds.every(id => state.checkedItems[id]);
+    }
+
+    // ============ RENDER FUNCTIONS ============
+    function renderTask(taskId) {
+      const task = TASKS_DATA[taskId];
+      if (!task) return '';
+      
+      const isChecked = state.checkedItems[taskId];
+      const isExpanded = state.expandedTasks[taskId];
+      const hasDetails = (task.steps && task.steps.length) || (task.refs && task.refs.length);
+      
+      let trackBadge = '';
+      if (task.track) {
+        trackBadge = `<span class="task-badge ${task.track}">${task.track === 'pp-dev' ? 'PP-DEV' : task.track.toUpperCase()}</span>`;
+      }
+      
+      let gateBadge = task.critical ? '<span class="task-badge gate">GATE</span>' : '';
+      
+      let infoBtn = hasDetails ? `
+        <button class="task-info-btn ${isExpanded ? 'active' : ''}" onclick="toggleTaskExpand('${taskId}')">ℹ️</button>
+      ` : '';
+      
+      let details = '';
+      if (hasDetails && isExpanded) {
+        let stepsHtml = '';
+        if (task.steps && task.steps.length) {
+          stepsHtml = `
+            <h4>Detailed Steps</h4>
+            <ol class="task-steps">
+              ${task.steps.map((s, i) => `<li class="task-step"><span class="task-step-num">${i + 1}</span><span>${s}</span></li>`).join('')}
+            </ol>
+          `;
+        }
+        
+        let refsHtml = '';
+        if (task.refs && task.refs.length) {
+          refsHtml = `
+            <h4>References</h4>
+            <ul class="task-refs">
+              ${task.refs.map(r => `<li class="task-ref"><a href="${r.url}" target="_blank" rel="noopener">🔗 ${r.title}</a></li>`).join('')}
+            </ul>
+          `;
+        }
+        
+        details = `<div class="task-details">${stepsHtml}${refsHtml}</div>`;
+      }
+      
+      return `
+        <div class="task ${isChecked ? 'completed' : ''}">
+          <div class="task-main">
+            <div class="task-checkbox ${isChecked ? 'checked' : ''}" onclick="toggleCheck('${taskId}')">${isChecked ? '✓' : ''}</div>
+            <div class="task-content">
+              <div class="task-header">
+                ${trackBadge}
+                <span class="task-label">${task.label}</span>
+                ${gateBadge}
+                ${infoBtn}
+              </div>
+              ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
+              ${task.duration ? `<div class="task-duration">⏱️ ${task.duration}</div>` : ''}
+            </div>
+          </div>
+          ${details}
+        </div>
+      `;
+    }
+
+    function renderGate(label, taskIds, description) {
+      const passed = isGatePassed(taskIds);
+      const progress = getProgress(taskIds);
+      
+      return `
+        <div class="gate ${passed ? 'passed' : ''}">
+          <div class="gate-icon">${passed ? '🔓' : '🔒'}</div>
+          <div class="gate-info">
+            <div class="gate-title">${label}</div>
+            <div class="gate-desc">${description}</div>
+            <div class="gate-status ${passed ? 'complete' : 'pending'}">
+              ${passed ? '✓ Gate passed - proceed to next phase' : `${progress.checked}/${progress.total} requirements complete`}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPhase(id, number, title, subtitle, taskIds, color, content) {
+      const progress = getProgress(taskIds);
+      const isExpanded = state.expandedPhases[id];
+      
+      return `
+        <div class="phase">
+          <div class="phase-header ${color}" onclick="togglePhase('${id}')">
+            <div class="phase-number ${color}">${number}</div>
+            <div class="phase-info">
+              <div class="phase-title">${title}</div>
+              <div class="phase-subtitle">${subtitle}</div>
+            </div>
+            <div class="phase-progress">
+              <div class="phase-progress-percent">${progress.percent}%</div>
+              <div class="phase-progress-count">${progress.checked}/${progress.total} done</div>
+            </div>
+            <div class="phase-toggle">${isExpanded ? '▼' : '▶'}</div>
+          </div>
+          <div class="phase-content ${isExpanded ? '' : 'hidden'}">
+            ${content}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSubsection(id, title, subtitle, color, content) {
+      const isExpanded = state.expandedSubsections[id] !== false;
+      
+      return `
+        <div class="subsection ${color}">
+          <div class="subsection-header" onclick="toggleSubsection('${id}')">
+            <div>
+              <div class="subsection-title">${title}</div>
+              <div class="subsection-subtitle">${subtitle}</div>
+            </div>
+            <span>${isExpanded ? '▼' : '▶'}</span>
+          </div>
+          <div class="subsection-content ${isExpanded ? '' : 'hidden'}">
+            ${content}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDecision() {
+      return `
+        <div class="decision">
+          <div class="decision-header">
+            <div class="decision-icon">❓</div>
+            <div class="decision-question">Does a NIAP-approved Protection Profile exist for your product type?</div>
+          </div>
+          <div class="decision-options">
+            <button class="decision-option ${state.ppRequired === 'existing' ? 'selected' : ''}" onclick="setPPDecision('existing')">
+              <div class="decision-option-label">✓ Yes - PP Exists</div>
+              <div class="decision-option-desc">A Protection Profile covers my product category (e.g., VPN Gateway, FDE, MDM, Network Device)</div>
+            </button>
+            <button class="decision-option ${state.ppRequired === 'develop' ? 'selected' : ''}" onclick="setPPDecision('develop')">
+              <div class="decision-option-label">✗ No - Need New PP</div>
+              <div class="decision-option-desc">No existing PP covers my product type - will need to work with NIAP to develop one</div>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderVendorTrack() {
+      const prepTasks = ['v-prep-1', 'v-prep-2', 'v-prep-3'];
+      const fipsTasks = ['fips-1', 'fips-2', 'fips-3', 'fips-4', 'fips-5', 'fips-6', 'fips-7'];
+      const ppDevTasks = ['pp-1', 'pp-2', 'pp-3', 'pp-4', 'pp-5', 'pp-6', 'pp-7', 'pp-8'];
+      const niapEvalTasks = ['niap-2', 'niap-3', 'niap-4', 'niap-5', 'niap-6', 'niap-7'];
+      const niapBaseTasks = ['niap-1'];
+      const csfcTasks = ['v-csfc-1', 'v-csfc-2', 'v-csfc-3'];
+      const finalTasks = ['v-csfc-4'];
+      
+      let niapTasks = [...niapBaseTasks];
+      if (state.ppRequired === 'develop') {
+        niapTasks = [...niapTasks, ...ppDevTasks, ...niapEvalTasks];
+      } else if (state.ppRequired === 'existing') {
+        niapTasks = [...niapTasks, ...niapEvalTasks];
+      }
+      
+      const phase2Tasks = [...fipsTasks, ...niapTasks];
+      
+      // PP Warning
+      let ppWarning = '';
+      if (state.ppRequired === 'develop') {
+        ppWarning = `
+          <div class="warning">
+            <div class="warning-icon">⚠️</div>
+            <div>
+              <div class="warning-title">New PP Development Required</div>
+              <div class="warning-text">
+                This adds 12-24+ months to your timeline. Contact NIAP immediately at 
+                <code>niap@niap-ccevs.org</code> to discuss options.
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      
+      // PP Dev section
+      let ppDevSection = '';
+      if (state.ppRequired === 'develop') {
+        ppDevSection = `
+          <div style="margin: 1rem 0; padding: 0.75rem; background: #fdf2f8; border: 1px solid #f9a8d4; border-radius: 0.5rem;">
+            <strong style="color: #9d174d;">📖 Protection Profile Development Process</strong>
+            <div style="font-size: 0.875rem; color: #831843;">These steps must complete BEFORE you can proceed to product evaluation</div>
+          </div>
+          ${ppDevTasks.map(renderTask).join('')}
+          <div style="margin: 1rem 0; padding: 0.75rem; background: #dcfce7; border: 1px solid #86efac; border-radius: 0.5rem;">
+            <strong style="color: #166534;">✓ PP Complete - Now Proceed to Product Evaluation</strong>
+          </div>
+        `;
+      }
+      
+      // NIAP eval section
+      let niapEvalSection = '';
+      if (state.ppRequired) {
+        niapEvalSection = `
+          <div style="margin: 1rem 0; padding-top: 0.75rem; border-top: 1px solid #5eead4;">
+            <strong style="font-size: 0.875rem; color: #0f766e;">
+              ${state.ppRequired === 'develop' ? 'Product Evaluation (After PP Published)' : 'Product Evaluation Against Existing PP'}
+            </strong>
+          </div>
+          ${niapEvalTasks.map(renderTask).join('')}
+        `;
+      } else {
+        niapEvalSection = `
+          <div style="padding: 0.75rem; background: #eff6ff; border: 1px solid #93c5fd; border-radius: 0.5rem; font-size: 0.875rem; color: #1e40af;">
+            <strong>Select your PP path above</strong> to see the complete NIAP workflow
+          </div>
+        `;
+      }
+
+      // Phase 1
+      const phase1Content = `
+        ${prepTasks.map(renderTask).join('')}
+        ${renderDecision()}
+        ${ppWarning}
+        ${renderGate('GATE: Path Determined', prepTasks, 'Must complete planning and determine PP path before starting certifications')}
+      `;
+      
+      // Phase 2
+      const fipsContent = renderSubsection('fips', 'FIPS 140-3 Track', '18-24+ months - THE LONG POLE - Start immediately', 'orange',
+        fipsTasks.map(renderTask).join('')
+      );
+      
+      const niapSubtitle = state.ppRequired === 'develop' ? '12-24 months (PP Dev) + 6-18 months (Evaluation)' : '6-18 months';
+      const niapContent = renderSubsection('niap', 'NIAP Common Criteria Track', niapSubtitle, 'teal',
+        `${renderTask('niap-1')}${ppDevSection}${niapEvalSection}`
+      );
+      
+      const phase2Content = `
+        <div class="parallel">
+          <span class="parallel-icon">⑂</span>
+          <span class="parallel-badge">These tracks run IN PARALLEL</span>
+          <span class="parallel-icon">⑂</span>
+        </div>
+        ${fipsContent}
+        ${niapContent}
+        <div class="merge">
+          <span class="merge-icon">⑃</span>
+          <span class="merge-badge">All parallel tracks must complete before proceeding</span>
+          <span class="merge-icon">⑃</span>
+        </div>
+        ${renderGate('GATE: Both Certifications Complete', ['fips-7', 'niap-7'], 'You MUST have both FIPS 140-3 AND NIAP CC certificates before approaching CSfC PMO')}
+      `;
+      
+      // Phase 3
+      const phase3Content = `
+        <div style="background: #fffbeb; border: 1px solid #fbbf24; border-radius: 0.5rem; padding: 0.75rem; margin-bottom: 1rem; display: flex; gap: 0.5rem; align-items: flex-start;">
+          <span>⚠️</span>
+          <div style="font-size: 0.875rem; color: #92400e;">
+            <strong>Prerequisites:</strong> You cannot start this phase until you have BOTH your FIPS 140-3 certificate AND your NIAP CC certificate.
+          </div>
+        </div>
+        ${csfcTasks.map(renderTask).join('')}
+        ${renderGate('GATE: MoA Signed', csfcTasks, 'MoA must be fully executed before listing')}
+      `;
+      
+      // Phase 4
+      let celebration = '';
+      if (state.checkedItems['v-csfc-4']) {
+        celebration = `
+          <div class="celebration">
+            <div class="celebration-emoji">🎉</div>
+            <div class="celebration-title">Congratulations!</div>
+            <div class="celebration-text">Your product is now on the CSfC Components List</div>
+          </div>
+        `;
+      }
+      const phase4Content = `${finalTasks.map(renderTask).join('')}${celebration}`;
+      
+      // Timeline
+      let ppTimeline = '';
+      if (state.ppRequired === 'develop') {
+        ppTimeline = `
+          <div class="timeline-row">
+            <div class="timeline-label">PP Development:</div>
+            <div class="timeline-bar">
+              <div class="timeline-fill pink" style="width: 60%;"></div>
+              <span class="timeline-text">12-24+ months (before NIAP eval)</span>
+            </div>
+          </div>
+        `;
+      }
+      
+      const timeline = `
+        <div class="timeline">
+          <h2>Timeline Summary</h2>
+          <div class="timeline-row">
+            <div class="timeline-label">FIPS 140-3:</div>
+            <div class="timeline-bar">
+              <div class="timeline-fill orange" style="width: 80%;"></div>
+              <span class="timeline-text">18-24+ months (longest)</span>
+            </div>
+          </div>
+          <div class="timeline-row">
+            <div class="timeline-label">NIAP (w/ PP):</div>
+            <div class="timeline-bar">
+              <div class="timeline-fill teal" style="width: 40%;"></div>
+              <span class="timeline-text">6-18 months</span>
+            </div>
+          </div>
+          ${ppTimeline}
+          <div class="timeline-row">
+            <div class="timeline-label">CSfC PMO:</div>
+            <div class="timeline-bar">
+              <div class="timeline-fill purple" style="width: 15%;"></div>
+              <span class="timeline-text">1-2 months</span>
+            </div>
+          </div>
+          <div class="timeline-note">
+            <strong>Note:</strong> FIPS and NIAP run in parallel. ${state.ppRequired === 'develop' 
+              ? 'Since you need a new PP, your critical path is: PP Development → NIAP Evaluation (parallel to FIPS) → CSfC PMO' 
+              : 'Your critical path is typically FIPS 140-3 since it takes longest.'}
+          </div>
+        </div>
+      `;
+      
+      return `
+        <div class="overview">
+          <h2>Vendor Path Overview</h2>
+          <div class="overview-steps">
+            <span class="overview-step">1. Prep</span>
+            <span class="overview-arrow">→</span>
+            <span class="overview-step">2. FIPS + NIAP (parallel)</span>
+            <span class="overview-arrow">→</span>
+            <span class="overview-step">3. CSfC PMO</span>
+            <span class="overview-arrow">→</span>
+            <span class="overview-step">4. Listed!</span>
+          </div>
+          <div class="overview-timeline">
+            <div class="overview-time"><strong>With Existing PP:</strong><br>18-30 months total</div>
+            <div class="overview-time"><strong>If New PP Required:</strong><br>30-48+ months total</div>
+          </div>
+        </div>
+        
+        ${renderPhase('vendor-1', '1', 'Preparation & Planning', 'Critical first step - determines your path', prepTasks, 'blue', phase1Content)}
+        ${renderPhase('vendor-2', '2', 'Certification Testing', 'FIPS 140-3 and NIAP run IN PARALLEL - start both now', phase2Tasks, 'purple', phase2Content)}
+        ${renderPhase('vendor-3', '3', 'CSfC PMO Component Review', 'Submit to NSA for Components List consideration', csfcTasks, 'purple', phase3Content)}
+        ${renderPhase('vendor-4', '4', 'Component Listed', 'Final step - you\'re on the list!', finalTasks, 'green', phase4Content)}
+        ${timeline}
+      `;
+    }
+
+    function renderCustomerTrack() {
+      const planTasks = ['c-plan-1', 'c-plan-2', 'c-plan-3', 'c-plan-4'];
+      const buildTasks = ['c-build-1', 'c-build-2', 'c-build-3', 'c-build-4'];
+      const regTasks = ['c-reg-1', 'c-reg-2', 'c-reg-3', 'c-reg-4', 'c-reg-5'];
+      const approveTasks = ['c-approve-1', 'c-approve-2', 'c-approve-3'];
+      
+      const phase1Content = `
+        ${planTasks.map(renderTask).join('')}
+        ${renderGate('GATE: Design Approved', ['c-plan-1', 'c-plan-2', 'c-plan-3'], 'Get PMO feedback before building')}
+      `;
+      
+      const phase2Content = `
+        ${buildTasks.map(renderTask).join('')}
+        ${renderGate('GATE: Solution Tested & Documented', ['c-build-1', 'c-build-3', 'c-build-4'], 'Must have working solution with evidence')}
+      `;
+      
+      const phase3Content = `
+        ${regTasks.map(renderTask).join('')}
+        ${renderGate('GATE: Package Submitted', ['c-reg-1', 'c-reg-4', 'c-reg-5'], 'Complete package required')}
+      `;
+      
+      let celebration = '';
+      if (state.checkedItems['c-approve-3']) {
+        celebration = `
+          <div class="celebration">
+            <div class="celebration-emoji">🎉</div>
+            <div class="celebration-title">Solution Approved!</div>
+            <div class="celebration-text">Remember: Annual renewal required</div>
+          </div>
+        `;
+      }
+      const phase4Content = `${approveTasks.map(renderTask).join('')}${celebration}`;
+      
+      return `
+        <div class="overview customer">
+          <h2>Customer Path Overview</h2>
+          <div class="overview-steps">
+            <span class="overview-step">1. Plan & Design</span>
+            <span class="overview-arrow">→</span>
+            <span class="overview-step">2. Build & Test</span>
+            <span class="overview-arrow">→</span>
+            <span class="overview-step">3. Registration</span>
+            <span class="overview-arrow">→</span>
+            <span class="overview-step">4. Approval</span>
+          </div>
+          <div style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">
+            <strong>Timeline:</strong> 2-6 months (assumes components already on CSfC list)
+          </div>
+        </div>
+        
+        ${renderPhase('customer-1', '1', 'Planning & Design', 'Before you build anything', planTasks, 'blue', phase1Content)}
+        ${renderPhase('customer-2', '2', 'Build & Test Solution', 'Implement and validate', buildTasks, 'teal', phase2Content)}
+        ${renderPhase('customer-3', '3', 'Solution Registration', 'Submit to CSfC PMO', regTasks, 'purple', phase3Content)}
+        ${renderPhase('customer-4', '4', 'PMO Review & Approval', 'NSA reviews and issues acknowledgement', approveTasks, 'green', phase4Content)}
+        
+        <div style="background: #fffbeb; border: 2px solid #fbbf24; border-radius: 0.75rem; padding: 1rem; margin-top: 1.5rem; display: flex; gap: 0.75rem; align-items: flex-start;">
+          <span style="font-size: 1.5rem;">🔄</span>
+          <div>
+            <div style="font-weight: bold; color: #92400e;">Annual Renewal Required</div>
+            <div style="font-size: 0.875rem; color: #a16207;">Registrations expire after 1 year. You'll receive notices at 120, 60, and 30 days.</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function render() {
+      // Calculate overall progress
+      let allTasks;
+      if (state.activeTrack === 'vendor') {
+        const niapTasks = state.ppRequired === 'develop' 
+          ? ['niap-1', 'pp-1', 'pp-2', 'pp-3', 'pp-4', 'pp-5', 'pp-6', 'pp-7', 'pp-8', 'niap-2', 'niap-3', 'niap-4', 'niap-5', 'niap-6', 'niap-7']
+          : ['niap-1', 'niap-2', 'niap-3', 'niap-4', 'niap-5', 'niap-6', 'niap-7'];
+        allTasks = ['v-prep-1', 'v-prep-2', 'v-prep-3', 'fips-1', 'fips-2', 'fips-3', 'fips-4', 'fips-5', 'fips-6', 'fips-7', ...niapTasks, 'v-csfc-1', 'v-csfc-2', 'v-csfc-3', 'v-csfc-4'];
+      } else {
+        allTasks = ['c-plan-1', 'c-plan-2', 'c-plan-3', 'c-plan-4', 'c-build-1', 'c-build-2', 'c-build-3', 'c-build-4', 'c-reg-1', 'c-reg-2', 'c-reg-3', 'c-reg-4', 'c-reg-5', 'c-approve-1', 'c-approve-2', 'c-approve-3'];
+      }
+      const progress = getProgress(allTasks);
+      
+      const html = `
+        <div class="header">
+          <div class="header-top">
+            <div>
+              <h1>🛡️ CSfC Process Roadmap</h1>
+              <p>Complete step-by-step guide with detailed elaborations</p>
+              <div class="save-indicator">💾 Progress auto-saved to your browser</div>
+            </div>
+            <div class="progress-display">
+              <div class="progress-percent">${progress.percent}%</div>
+              <div class="progress-label">Overall Progress</div>
+              <button class="clear-btn" onclick="clearProgress()">Clear Progress</button>
+            </div>
+          </div>
+          
+          <div class="track-selector">
+            <button class="track-btn ${state.activeTrack === 'vendor' ? 'active' : 'inactive'}" onclick="setTrack('vendor')">
+              🏢 Vendor Path
+            </button>
+            <button class="track-btn customer ${state.activeTrack === 'customer' ? 'active' : 'inactive'}" onclick="setTrack('customer')">
+              👥 Customer Path
+            </button>
+          </div>
+        </div>
+        
+        ${state.activeTrack === 'vendor' ? renderVendorTrack() : renderCustomerTrack()}
+        
+        <div class="contacts">
+          <h2>Key Contacts</h2>
+          <div class="contacts-grid">
+            <div class="contact-card">
+              <div class="contact-name">NIAP (CC & PP Development)</div>
+              <div class="contact-email">niap@niap-ccevs.org</div>
+              <div class="contact-phone">410-854-4458</div>
+            </div>
+            <div class="contact-card">
+              <div class="contact-name">CMVP (FIPS 140-3)</div>
+              <div class="contact-email">csrc.nist.gov/projects/cmvp</div>
+            </div>
+            <div class="contact-card">
+              <div class="contact-name">CSfC Registration</div>
+              <div class="contact-email">csfc_register@nsa.gov</div>
+            </div>
+            <div class="contact-card">
+              <div class="contact-name">CSfC Components</div>
+              <div class="contact-email">csfc_components@nsa.gov</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="footer">
+          Based on NSA CSfC Customer Handbook, NIAP Technical Communities documentation, and NIST CMVP guidance
+          <br><span class="saved">✓ Your progress is automatically saved to this browser</span>
+        </div>
+      `;
+      
+      document.getElementById('app').innerHTML = html;
+    }
+
+    // ============ EVENT HANDLERS ============
+    window.toggleCheck = function(taskId) {
+      state.checkedItems[taskId] = !state.checkedItems[taskId];
+      saveState();
+      render();
+    };
+
+    window.togglePhase = function(phaseId) {
+      state.expandedPhases[phaseId] = !state.expandedPhases[phaseId];
+      saveState();
+      render();
+    };
+
+    window.toggleTaskExpand = function(taskId) {
+      state.expandedTasks[taskId] = !state.expandedTasks[taskId];
+      saveState();
+      render();
+    };
+
+    window.toggleSubsection = function(id) {
+      state.expandedSubsections[id] = state.expandedSubsections[id] === false ? true : false;
+      saveState();
+      render();
+    };
+
+    window.setTrack = function(track) {
+      state.activeTrack = track;
+      saveState();
+      render();
+    };
+
+    window.setPPDecision = function(value) {
+      state.ppRequired = value;
+      saveState();
+      render();
+    };
+
+    window.clearProgress = function() {
+      if (confirm('Are you sure you want to clear all progress? This cannot be undone.')) {
+        state.checkedItems = {};
+        state.ppRequired = null;
+        saveState();
+        render();
+      }
+    };
+
+    // ============ INIT ============
+    loadState();
+    render();
+  </script>
+</body>
+</html>
